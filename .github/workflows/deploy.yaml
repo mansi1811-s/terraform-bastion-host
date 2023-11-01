@@ -3,8 +3,8 @@ run-name: ${{ github.actor }} has triggered the pipeline
 
 on: 
   push:
-    branches:
-      - 'main'
+    # branches:
+    #   - 'main'
   workflow_dispatch:
     inputs:
       # Working directory input from user.
