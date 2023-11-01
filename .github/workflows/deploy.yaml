@@ -2,18 +2,11 @@ name: Teraform CI CD pipeline for Deploying Bastion Server
 run-name: ${{ github.actor }} has triggered the pipeline
 
 on: 
-  push:
-    # branches:
-    #   - 'main'
+  # push:
+  #   # branches:
+  #   #   - 'main'
   workflow_dispatch:
     inputs:
-      # # Working directory input from user.
-      # resource:
-      #   type: choice
-      #   description: Choose the resource
-      #   options:
-      #   - name_of_dir1
-      #   - name_of_dir2
       # Terraform action you want to perform
       action:
         description: 'Terraform Action to Perform'
@@ -52,7 +45,7 @@ jobs:
         working-directory: .
       - name: Terraform Apply
         id: apply
-        run: terraform destroy --auto-approve
+        run: terraform apply --auto-approve
         working-directory: .
 
   terraform-destroy:
@@ -77,7 +70,7 @@ jobs:
         id: plan
         run: terraform plan
         working-directory: .
-      - name: Terraform Apply
+      - name: Terraform Destroy
         id: apply
         run: terraform destroy --auto-approve
         working-directory: .
