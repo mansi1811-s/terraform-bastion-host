@@ -27,13 +27,16 @@ resource "aws_instance" "public-ec2" {
   security_groups             = ["${var.security_group_id}"]
   subnet_id                   = "${var.public_subnet_id}"
   associate_public_ip_address = true
+  metadata_options {
+     http_tokens = "required"
+     }  
 
   user_data = data.template_file.user_data.rendered
 
   # To solve HIGH Root block device is not encrypted add following block
-  #  root_block_device {
-  #     encrypted = true
-  # }
+   root_block_device {
+      encrypted = true
+  }
 
   tags = {
     Name = "${var.public_ec2_name}"
@@ -77,11 +80,13 @@ resource "aws_instance" "private-ec2" {
   subnet_id                   = "${var.private_subnet_id}"
   associate_public_ip_address = false
   user_data                   = data.template_file.user_data.rendered
-
+  metadata_options {
+     http_tokens = "required"
+     }  
   # to solve HIGH Root block device is not encrypted. 
-  #  root_block_device {
-  #     encrypted = true
-  # }
+   root_block_device {
+      encrypted = true
+  }
   
   tags = {
     Name = "${var.private_ec2_name}"

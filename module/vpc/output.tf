@@ -34,7 +34,7 @@ output "private_subnet_id" {
 
 output "security_group_id" {
   description = "ID of NGINX security group"
-  value = aws_security_group.nginx-security-group.id
+  value = aws_security_group.my-security-group.id
 }
 
 output "public_route_table_id" {

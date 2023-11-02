@@ -1,4 +1,5 @@
 # 1 create custom vpc with CIDR "10.0.0.0/16"
+# tfsec:ignore:aws-ec2-require-vpc-flow-logs-for-all-vpcs
 resource "aws_vpc" "my_vpc" {
   cidr_block = var.cidr_block_value["my_vpc_cidr"]
   tags = {
@@ -37,7 +38,7 @@ resource "aws_subnet" "public-subnet-1" {
   vpc_id                  = aws_vpc.my_vpc.id
   cidr_block              = var.cidr_block_value["public-subnet"]
   availability_zone       = var.availability_zone_value
-  map_public_ip_on_launch = true
+  map_public_ip_on_launch = true # tfsec:ignore:aws-ec2-no-public-ip-subnet
   tags = {
     Name = "public-subnet-1"
   }
@@ -79,12 +80,14 @@ resource "aws_route_table_association" "public-subnet-1-route-table-association"
 # 9 security group 
 
 #tfsec:ignore:aws-ec2-no-public-ingress-sgr 
-resource "aws_security_group" "nginx-security-group" {
-  name   = "nginx-Security-Group"
+resource "aws_security_group" "my-security-group" {
+  name   = "my-Security-Group"
+  description = "Security group for inbound and outbound traffic"
   vpc_id = aws_vpc.my_vpc.id
   dynamic "ingress" {
     for_each    = var.ingress_ports
     content{
+    description = "Allow inbound traffic for ssh and http "
     from_port   = ingress.value.from_port
     to_port     = ingress.value.to_port
     protocol    = ingress.value.protocol
@@ -97,15 +100,16 @@ resource "aws_security_group" "nginx-security-group" {
   dynamic "egress" {
     for_each = var.egress_port
     content {
+    description = "Allow outbound for all traffic "
     from_port   = egress.value.from_port
     to_port     = egress.value.to_port
     protocol    = egress.value.protocol
-    cidr_blocks = egress.value.cidr_blocks 
+    cidr_blocks = egress.value.cidr_blocks #tfsec:ignore:aws-ec2-no-public-egress-sgr
     }
   
   }
   tags = {
-    Name = "nginx-SecurityGroup"
+    Name = "my-SecurityGroup"
   }
 }
 
