@@ -43,6 +43,9 @@ jobs:
         id: plan
         run: terraform plan
         working-directory: .
+      - name: check plan status
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
       - name: Terraform Apply
         id: apply
         run: terraform apply --auto-approve
