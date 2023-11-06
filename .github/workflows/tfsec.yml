@@ -7,9 +7,9 @@ name: tfsec
 
 on:
   push:
-    branches: [ "feature" ]
+    # branches: [ "feature" ]
   pull_request:
-    branches: [ "feature" ]
+    # branches: [ "feature" ]
   schedule:
     - cron: '19 0 * * 2'
 
