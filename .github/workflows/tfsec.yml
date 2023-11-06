@@ -36,3 +36,9 @@ jobs:
         with:
           # Path to SARIF file relative to the root of the repository
           sarif_file: tfsec.sarif
+
+      - name: Upload SARIF Report
+        uses: actions/upload-artifact@v2
+        with:
+          name: tfsec-results
+          path: tfsec.sarif
