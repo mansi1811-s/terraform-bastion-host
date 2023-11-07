@@ -35,16 +35,18 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
 jobs:
-  tfsec-check:
-    name: tfsec-check
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check TFSEC_STATUS
-        run: echo "TFSEC_STATUS=${{ env.TFSEC_STATUS }}" 
+  # tfsec-check:
+  #   name: tfsec-check
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Check TFSEC_STATUS
+  #       run: echo "TFSEC_STATUS=${{ env.TFSEC_STATUS }}" 
         
   terraform-apply:
     name: terraform-apply
-    if: ${{ github.event.inputs.action == 'terraform-apply' }}
+    # if: ${{ github.event.inputs.action == 'terraform-apply' }}
+    # runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.inputs.action == 'terraform-apply' }}
     runs-on: ubuntu-latest
     
     steps:
@@ -74,7 +76,9 @@ jobs:
 
   terraform-destroy:
     name: terraform-destroy
-    if: ${{ github.event.inputs.action == 'terraform-destroy' }}
+    # if: ${{ github.event.inputs.action == 'terraform-destroy' }}
+    # runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.inputs.action == 'terraform-apply' }}
     runs-on: ubuntu-latest
     
     steps:
