@@ -27,6 +27,9 @@ jobs:
         uses: actions/checkout@v3
       - name: Run Tfsec
         uses: aquasecurity/tfsec-action@v1.0.0
+        with:
+          sarif_file: tfsec.sarif
+
 
       # - name: Run tfsec
       #   uses: aquasecurity/tfsec-sarif-action@9a83b5c3524f825c020e356335855741fd02745f
@@ -39,8 +42,8 @@ jobs:
       # #     # Path to SARIF file relative to the root of the repository
       # #     sarif_file: tfsec.sarif
 
-      # - name: Upload SARIF Report
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: tfsec-results
-      #     path: tfsec.sarif
+      - name: Upload SARIF Report
+        uses: actions/upload-artifact@v2
+        with:
+          name: tfsec-results
+          path: tfsec.sarif
