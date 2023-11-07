@@ -35,12 +35,12 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
 jobs:
-  # tfsec-check:
-  #   name: tfsec-check
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Check TFSEC_STATUS
-  #       run: echo "TFSEC_STATUS=${{ env.TFSEC_STATUS }}" 
+  tfsec-check:
+    name: tfsec-check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check TFSEC_STATUS
+        run: echo "TFSEC_STATUS=${{ env.TFSEC_STATUS }}" 
         
   terraform-apply:
     name: terraform-apply
