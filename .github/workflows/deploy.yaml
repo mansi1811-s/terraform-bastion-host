@@ -22,11 +22,15 @@ on:
           options:
           - terraform-apply
           - terraform-destroy
+    # workflow_run:
+    #   types:
+    #     - completed
+    #   workflows:
+    #     - tfsec.yml
     workflow_run:
+      workflows: ["tfsec"]
       types:
         - completed
-      workflows:
-        - tfsec.yml
     
 
   
