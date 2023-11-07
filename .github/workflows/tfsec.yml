@@ -1,21 +1,43 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
 name: tfsec
 
 on:
+  # workflow_dispatch:
   push:
-    # branches: [ "feature" ]
+    # branches: [ "main" ]
   pull_request:
-    # branches: [ "feature" ]
+    branches: [ "main" ]
   schedule:
     - cron: '19 0 * * 2'
 
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Terraform Action to Perform'
+        type: choice
+        options:
+        - terraform-apply
+        - terraform-destroy
+    # workflow_run:
+    #   types:
+    #     - completed
+    #   workflows:
+    #     - tfsec.yml
+  # workflow_run:
+  #   workflows: ["tfsec"]
+  #   types:
+  #     - completed
+    
+
+  
+
+  
+env:
+  AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
 jobs:
   tfsec:
-    name: Run tfsec sarif report
+    name: tfsec sarif report
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -25,29 +47,130 @@ jobs:
     steps:
       - name: Clone repo
         uses: actions/checkout@v3
-      - name: Run Tfsec
-        uses: aquasecurity/tfsec-action@v1.0.0
-      # - name: Set TFSEC_STATUS
-      #   run: echo "TFSEC_STATUS=success" >> $GITHUB_ENV
-      #   if: success()
 
-
-
-      - name: Scan with tfsec
+      - name: Run tfsec
         uses: aquasecurity/tfsec-sarif-action@9a83b5c3524f825c020e356335855741fd02745f
         with:
           sarif_file: tfsec.sarif
-        if: always()
-
-      # # - name: Upload SARIF file
-      # #   uses: github/codeql-action/upload-sarif@v2
-      # #   with:
-      # #     # Path to SARIF file relative to the root of the repository
-      # #     sarif_file: tfsec.sarif
 
       - name: Upload SARIF Report
         uses: actions/upload-artifact@v2
         with:
           name: tfsec-results
           path: tfsec.sarif
-        if: always()
+
+  terraform-apply:
+    name: terraform-apply
+    needs: tfsec
+    if: ${{ github.event.inputs.action == 'terraform-apply' }}
+    runs-on: ubuntu-latest
+    # if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.inputs.action == 'terraform-apply' }}
+    # runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+      - name: Terraform Init
+        id: init
+        run: terraform init
+        working-directory: .
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate
+        working-directory: .
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan
+        working-directory: .
+      - name: check plan status
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
+      - name: Terraform Apply
+        id: apply
+        run: terraform apply --auto-approve
+        working-directory: .
+
+  terraform-destroy:
+    name: terraform-destroy
+    needs: tfsec
+    if: ${{ github.event.inputs.action == 'terraform-destroy' }}
+    runs-on: ubuntu-latest
+    # if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.inputs.action == 'terraform-destroy' }}
+    # runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+      - name: Terraform Init
+        id: init
+        run: terraform init
+        working-directory: .
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate
+        working-directory: .
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan
+        working-directory: .
+      - name: Terraform Destroy
+        id: apply
+        run: terraform destroy --auto-approve
+        working-directory: .
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+# name: tfsec
+
+# on:
+#   push:
+#     # branches: [ "feature" ]
+#   pull_request:
+#     # branches: [ "feature" ]
+#   schedule:
+#     - cron: '19 0 * * 2'
+
+# jobs:
+#   tfsec:
+#     name: Run tfsec sarif report
+#     runs-on: ubuntu-latest
+#     permissions:
+#       actions: read
+#       contents: read
+#       security-events: write
+
+#     steps:
+#       - name: Clone repo
+#         uses: actions/checkout@v3
+#       - name: Run Tfsec
+#         uses: aquasecurity/tfsec-action@v1.0.0
+#       # - name: Set TFSEC_STATUS
+#       #   run: echo "TFSEC_STATUS=success" >> $GITHUB_ENV
+#       #   if: success()
+
+
+
+#       - name: Scan with tfsec
+#         uses: aquasecurity/tfsec-sarif-action@9a83b5c3524f825c020e356335855741fd02745f
+#         with:
+#           sarif_file: tfsec.sarif
+#         if: always()
+
+#       # # - name: Upload SARIF file
+#       # #   uses: github/codeql-action/upload-sarif@v2
+#       # #   with:
+#       # #     # Path to SARIF file relative to the root of the repository
+#       # #     sarif_file: tfsec.sarif
+
+#       - name: Upload SARIF Report
+#         uses: actions/upload-artifact@v2
+#         with:
+#           name: tfsec-results
+#           path: tfsec.sarif
+#         if: always()
