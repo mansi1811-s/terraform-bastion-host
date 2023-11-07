@@ -1,5 +1,5 @@
 # 1 create custom vpc with CIDR "10.0.0.0/16"
-# tfsec:ignore:aws-ec2-require-vpc-flow-logs-for-all-vpcs
+
 resource "aws_vpc" "my_vpc" {
   cidr_block = var.cidr_block_value["my_vpc_cidr"]
   tags = {
