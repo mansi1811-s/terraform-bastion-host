@@ -48,10 +48,10 @@ jobs:
         
   terraform-apply:
     name: terraform-apply
-    # if: ${{ github.event.inputs.action == 'terraform-apply' }}
-    # runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.inputs.action == 'terraform-apply' }}
+    if: ${{ github.event.inputs.action == 'terraform-apply' }}
     runs-on: ubuntu-latest
+    # if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.inputs.action == 'terraform-apply' }}
+    # runs-on: ubuntu-latest
     
     steps:
       - name: Checkout
@@ -80,10 +80,10 @@ jobs:
 
   terraform-destroy:
     name: terraform-destroy
-    # if: ${{ github.event.inputs.action == 'terraform-destroy' }}
-    # runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.inputs.action == 'terraform-destroy' }}
+    if: ${{ github.event.inputs.action == 'terraform-destroy' }}
     runs-on: ubuntu-latest
+    # if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.inputs.action == 'terraform-destroy' }}
+    # runs-on: ubuntu-latest
     
     steps:
       - name: Checkout
