@@ -61,6 +61,7 @@ jobs:
         with:
           name: tfsec-results
           path: tfsec.sarif
+        if: always()
 
   terraform-apply:
     name: terraform-apply
