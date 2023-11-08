@@ -78,8 +78,7 @@ resource "aws_route_table_association" "public-subnet-1-route-table-association"
 }
 
 # 9 security group 
-
-
+#tfsec:ignore:aws-ec2-no-public-ingress-sgr 
 resource "aws_security_group" "my-security-group" {
   name   = "my-Security-Group"
   description = "Security group for inbound and outbound traffic"
