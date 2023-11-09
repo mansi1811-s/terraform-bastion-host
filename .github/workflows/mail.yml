@@ -40,7 +40,7 @@ jobs:
         if: always()
 
   send-email:
-    # needs: tfsec
+    needs: tfsec
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
