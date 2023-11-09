@@ -1,4 +1,4 @@
-name: tfsec scan and deploy 
+name: tfsec 
 
 on:
   # workflow_dispatch:
@@ -10,13 +10,13 @@ on:
     - cron: '19 0 * * 2'
 
   workflow_dispatch:
-    inputs:
-      action:
-        description: 'Terraform Action to Perform'
-        type: choice
-        options:
-        - terraform-apply
-        - terraform-destroy
+    # inputs:
+    #   action:
+    #     description: 'Terraform Action to Perform'
+    #     type: choice
+    #     options:
+    #     - terraform-apply
+    #     - terraform-destroy
     # workflow_run:
     #   types:
     #     - completed
@@ -31,13 +31,13 @@ on:
   
 
   
-env:
-  AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+# env:
+#   AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
+#   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
 jobs:
   tfsec:
-    name: tfsec sarif report
+    name: tfsec check
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -63,68 +63,68 @@ jobs:
           path: tfsec.sarif
         if: always()
 
-  terraform-apply:
-    name: terraform-apply
-    needs: tfsec
-    if: ${{ github.event.inputs.action == 'terraform-apply' }}
-    runs-on: ubuntu-latest
-    # if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.inputs.action == 'terraform-apply' }}
-    # runs-on: ubuntu-latest
+  # terraform-apply:
+  #   name: terraform-apply
+  #   needs: tfsec
+  #   if: ${{ github.event.inputs.action == 'terraform-apply' }}
+  #   runs-on: ubuntu-latest
+  #   # if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.inputs.action == 'terraform-apply' }}
+  #   # runs-on: ubuntu-latest
     
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v2
-      - name: Terraform Init
-        id: init
-        run: terraform init
-        working-directory: .
-      - name: Terraform Validate
-        id: validate
-        run: terraform validate
-        working-directory: .
-      - name: Terraform Plan
-        id: plan
-        run: terraform plan
-        working-directory: .
-      - name: check plan status
-        if: steps.plan.outcome == 'failure'
-        run: exit 1
-      - name: Terraform Apply
-        id: apply
-        run: terraform apply --auto-approve
-        working-directory: .
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+  #     - name: Set up Terraform
+  #       uses: hashicorp/setup-terraform@v2
+  #     - name: Terraform Init
+  #       id: init
+  #       run: terraform init
+  #       working-directory: .
+  #     - name: Terraform Validate
+  #       id: validate
+  #       run: terraform validate
+  #       working-directory: .
+  #     - name: Terraform Plan
+  #       id: plan
+  #       run: terraform plan
+  #       working-directory: .
+  #     - name: check plan status
+  #       if: steps.plan.outcome == 'failure'
+  #       run: exit 1
+  #     - name: Terraform Apply
+  #       id: apply
+  #       run: terraform apply --auto-approve
+  #       working-directory: .
 
-  terraform-destroy:
-    name: terraform-destroy
-    needs: tfsec
-    if: ${{ github.event.inputs.action == 'terraform-destroy' }}
-    runs-on: ubuntu-latest
-    # if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.inputs.action == 'terraform-destroy' }}
-    # runs-on: ubuntu-latest
+  # terraform-destroy:
+  #   name: terraform-destroy
+  #   needs: tfsec
+  #   if: ${{ github.event.inputs.action == 'terraform-destroy' }}
+  #   runs-on: ubuntu-latest
+  #   # if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.inputs.action == 'terraform-destroy' }}
+  #   # runs-on: ubuntu-latest
     
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v2
-      - name: Terraform Init
-        id: init
-        run: terraform init
-        working-directory: .
-      - name: Terraform Validate
-        id: validate
-        run: terraform validate
-        working-directory: .
-      - name: Terraform Plan
-        id: plan
-        run: terraform plan
-        working-directory: .
-      - name: Terraform Destroy
-        id: apply
-        run: terraform destroy --auto-approve
-        working-directory: .
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+  #     - name: Set up Terraform
+  #       uses: hashicorp/setup-terraform@v2
+  #     - name: Terraform Init
+  #       id: init
+  #       run: terraform init
+  #       working-directory: .
+  #     - name: Terraform Validate
+  #       id: validate
+  #       run: terraform validate
+  #       working-directory: .
+  #     - name: Terraform Plan
+  #       id: plan
+  #       run: terraform plan
+  #       working-directory: .
+  #     - name: Terraform Destroy
+  #       id: apply
+  #       run: terraform destroy --auto-approve
+  #       working-directory: .
 # This workflow uses actions that are not certified by GitHub.
 # They are provided by a third-party and are governed by
 # separate terms of service, privacy policy, and support
