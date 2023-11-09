@@ -1,0 +1,71 @@
+name: Send SARIF Report Email
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  MAIL_PASSWD: ${{ secrets.MAIL_PASSWD }}
+  MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+
+jobs:
+  tfsec:
+    name: tfsec check
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    steps:  
+      - name: Clone repo
+        uses: actions/checkout@v2
+
+      - name: Run Tfsec
+        uses: aquasecurity/tfsec-action@v1.0.0
+
+      - name: Set TFSEC_STATUS
+        run: echo "TFSEC_STATUS=success" >> $GITHUB_ENV
+        if: success()
+
+      - name: Scan with tfsec
+        uses: aquasecurity/tfsec-sarif-action@9a83b5c3524f825c020e356335855741fd02745f
+        with:
+          sarif_file: tfsec.sarif
+        if: always()
+
+      - name: Upload SARIF Report
+        uses: actions/upload-artifact@v2
+        with:
+          name: sarif-report
+          path: tfsec.sarif
+        if: always()
+
+  send-email:
+    needs: tfsec
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Download SARIF Report
+        uses: actions/download-artifact@v2
+        with:
+          name: sarif-report
+          path: sarif-report
+
+      - name: Send SARIF Report Email
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+          username: ${{secrets.MAIL_USERNAME}}
+          # Optional (recommended) mail server password:
+          password: ${{secrets.MAIL_PASSWd}}
+          to: mansi.s@sigmoidanalytics.com
+          from: Mansi Singh
+          subject: SARIF Report for tfsec scanning
+          body: Please find the SARIF report attached.
+          attachments: sarif-report/tfsec.sarif
