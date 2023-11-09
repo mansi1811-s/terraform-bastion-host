@@ -11,9 +11,10 @@ env:
   MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
 
 jobs:
-  tfsec:
-    name: tfsec check
+  tfsec-mail:
+    name: tfsec check and send mail
     runs-on: ubuntu-latest
+    continue-on-error: true
     permissions:
       actions: read
       contents: read
@@ -39,11 +40,11 @@ jobs:
           path: tfsec.sarif
         if: always()
 
-  send-email:
-    needs: tfsec
-    runs-on: ubuntu-latest
-    continue-on-error: true
-    steps:
+  # send-email:
+  #   needs: tfsec
+  #   runs-on: ubuntu-latest
+  #   continue-on-error: true
+  #   steps:
       - name: Checkout repository
         uses: actions/checkout@v2
         if: always()
