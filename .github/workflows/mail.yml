@@ -4,6 +4,7 @@ on:
   push:
     branches: [ feature ]
   workflow_dispatch:
+  
 
 env:
   MAIL_PASSWD: ${{ secrets.MAIL_PASSWD }}
@@ -39,8 +40,9 @@ jobs:
         if: always()
 
   send-email:
-    # needs: tfsec
+    needs: tfsec
     runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -50,6 +52,7 @@ jobs:
         with:
           name: sarif-report
           path: sarif-report
+          if: always()
 
       - name: Send SARIF Report Email
         uses: dawidd6/action-send-mail@v3
@@ -65,4 +68,6 @@ jobs:
           subject: SARIF Report for tfsec scanning
           body: Please find the SARIF report attached.
           attachments: sarif-report/tfsec.sarif
+        if: always()
+
           
