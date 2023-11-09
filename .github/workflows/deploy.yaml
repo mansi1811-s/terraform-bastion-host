@@ -222,7 +222,7 @@ jobs:
 #         run: terraform plan
 #         working-directory: .
 #       - name: Terraform Destroy
-        id: apply
-        run: terraform destroy --auto-approve
-        working-directory: .
+        # id: apply
+        # run: terraform destroy --auto-approve
+        # working-directory: .
         
