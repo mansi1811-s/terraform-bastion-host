@@ -39,7 +39,7 @@ jobs:
         if: always()
 
   send-email:
-    needs: tfsec
+    # needs: tfsec
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
