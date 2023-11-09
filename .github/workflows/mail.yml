@@ -40,19 +40,20 @@ jobs:
         if: always()
 
   send-email:
-    needs: tfsec
+    # needs: tfsec
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+        if: always()
 
       - name: Download SARIF Report
         uses: actions/download-artifact@v2
         with:
           name: sarif-report
           path: sarif-report
-          if: always()
+        if: always()
 
       - name: Send SARIF Report Email
         uses: dawidd6/action-send-mail@v3
